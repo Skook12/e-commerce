@@ -1,0 +1,30 @@
+tags:
+  - Authentication
+summary: Log in a user
+description: Authenticates a user based on username and password, creating a session cookie.
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: The user's username.
+          example: "testuser"
+        password:
+          type: string
+          description: The user's password.
+          format: password
+          example: "password123"
+responses:
+  200:
+    description: Login successful.
+  400:
+    description: Invalid data provided in the request body.
+  401:
+    description: Invalid username or password.

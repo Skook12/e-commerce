@@ -1,0 +1,17 @@
+tags:
+  - Cart
+summary: Add a product to the cart
+description: Adds one unit of a specified product to the logged-in user's cart.
+parameters:
+  - name: product_id
+    in: path
+    required: true
+    type: integer
+    description: The ID of the product to add to the cart.
+responses:
+  201:
+    description: Product added to cart successfully.
+  401:
+    description: Unauthorized, user is not logged in.
+  404:
+    description: User or Product not found.

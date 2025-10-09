@@ -1,0 +1,17 @@
+tags:
+  - Products
+summary: Delete a product
+description: Deletes a product from the store by its ID. Requires the user to be logged in.
+parameters:
+  - name: product_id
+    in: path
+    required: true
+    type: integer
+    description: The ID of the product to delete.
+responses:
+  200:
+    description: Product deleted successfully.
+  401:
+    description: Unauthorized, user is not logged in.
+  404:
+    description: Product not found.

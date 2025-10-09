@@ -1,0 +1,13 @@
+tags:
+  - Cart
+summary: Checkout and place an order
+description: Places an order with the items in the cart and clears the cart.
+responses:
+  200:
+    description: Order placed successfully.
+  400:
+    description: Cart is empty.
+  401:
+    description: Unauthorized, user is not logged in.
+  404:
+    description: User not found.

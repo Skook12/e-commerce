@@ -1,0 +1,39 @@
+tags:
+  - Products
+summary: Update an existing product
+description: Updates the details of a specific product. Requires the user to be logged in.
+parameters:
+  - name: product_id
+    in: path
+    required: true
+    type: integer
+    description: The ID of the product to update.
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      required:
+        - name
+        - description
+        - price
+      properties:
+        name:
+          type: string
+          description: The updated name of the product.
+        description:
+          type: string
+          description: The updated description.
+        price:
+          type: number
+          format: float
+          description: The updated price.
+responses:
+  200:
+    description: Product updated successfully.
+  400:
+    description: Invalid data provided.
+  401:
+    description: Unauthorized, user is not logged in.
+  404:
+    description: Product not found.

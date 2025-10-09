@@ -1,0 +1,17 @@
+tags:
+  - Cart
+summary: Remove a product from the cart
+description: Removes a product from the logged-in user's cart.
+parameters:
+  - name: product_id
+    in: path
+    required: true
+    type: integer
+    description: The ID of the product to remove from the cart.
+responses:
+  200:
+    description: Product removed from cart successfully.
+  401:
+    description: Unauthorized, user is not logged in.
+  404:
+    description: User not found or product not found in cart.

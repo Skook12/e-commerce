@@ -1,0 +1,9 @@
+tags:
+  - Authentication
+summary: Log out a user
+description: Clears the user's session and logs them out. Requires the user to be logged in.
+responses:
+  200:
+    description: Logout successful.
+  401:
+    description: Unauthorized, user is not logged in.

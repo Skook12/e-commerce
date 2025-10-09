@@ -1,0 +1,34 @@
+tags:
+  - Cart
+summary: Get the user's shopping cart
+description: Retrieves all items currently in the logged-in user's shopping cart.
+responses:
+  200:
+    description: A list of items in the cart.
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: Cart item ID.
+          quantity:
+            type: integer
+            description: Quantity of the product.
+          product:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              description:
+                type: string
+              price:
+                type: number
+                format: float
+  401:
+    description: Unauthorized, user is not logged in.
+  404:
+    description: User not found.
