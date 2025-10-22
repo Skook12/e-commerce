@@ -1,19 +1,24 @@
 from flask import Blueprint, request, jsonify
 from flasgger import swag_from
 from flask_login import login_required
+
+from ecommerce_api.repositories.category_repository import SQLAlchemyCategoryRepository
+from ecommerce_api.services import category_service
 from ..services.product_service import ProductService
 from ..repositories.product_repository import SQLAlchemyProductRepository
 from ..common.exceptions import NotFound, InvalidData
 
 products_bp = Blueprint('products', __name__)
 product_service = ProductService(SQLAlchemyProductRepository())
+category_service = category_service.CategoryService(SQLAlchemyCategoryRepository())
+
 
 @products_bp.route("/products", methods=["GET"])
 @swag_from('../../docs/products_list.yml')
 def get_products():
     products = product_service.get_all_products()
     return jsonify([{
-        "id": p.id, "name": p.name, "description": p.description, "price": p.price
+        "id": p.id, "name": p.name, "description": p.description, "price": p.price, "category": p.category_info.name, "image": p.image
     } for p in products]), 200
 
 @products_bp.route("/products/<int:product_id>", methods=["GET"])
@@ -21,11 +26,14 @@ def get_products():
 def get_product(product_id):
     try:
         product = product_service.get_product_by_id(product_id)
+        category = category_service.get_category_by_id(product.category)
         return jsonify({
             "id": product.id,
             "name": product.name,
             "description": product.description,
-            "price": product.price
+            "price": product.price,
+            "category": category.name,
+            "image": product.image
         }), 200
     except NotFound as e:
         return jsonify({"error": str(e)}), 404

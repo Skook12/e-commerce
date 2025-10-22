@@ -1,0 +1,22 @@
+tags:
+  - Category
+summary: Get a single category by its ID
+description: Retrieves the details of a specific category using its unique ID.
+parameters:
+  - id: category_id
+    in: path
+    required: true
+    type: integer
+    description: The ID of the category to retrieve.
+responses:
+  200:
+    description: Category details.
+    schema:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+  404:
+    description: Category not found.

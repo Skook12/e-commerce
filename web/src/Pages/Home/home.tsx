@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/ProductCard";
 import { Input } from "@/components/ui/input";
 import { Navbar } from "@/components/Navbar";
+import { useGetProducts } from "@/http/services/product/product-get-service";
+import { useGetCategories } from "@/http/services/category/category-get-service";
 //import { useCart, Product } from "../context/CartContext";
 
 const MOCK_PRODUCTS: Product[] = [
@@ -65,21 +67,14 @@ const MOCK_PRODUCTS: Product[] = [
   },
 ];
 
-const CATEGORIES = [
-  "Todos",
-  "Audio",
-  "Wearables",
-  "Periféricos",
-  "Computadores",
-  "Fotografia",
-  "Smartphones",
-];
-
 export function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");
+  const { data: products, isLoading: isLoadingProducts } = useGetProducts();
+  const { data: categories, isLoading: isLoadingCategories } =
+    useGetCategories();
 
-  const filteredProducts = MOCK_PRODUCTS.filter((product) => {
+  const filteredProducts = products?.filter((product) => {
     const matchesSearch =
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -116,15 +111,17 @@ export function Home() {
       <section className="border-b bg-background z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex gap-2 overflow-x-auto pb-2">
-            {CATEGORIES.map((category) => (
+            {categories?.map((category) => (
               <Button
-                key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
+                key={category.id}
+                variant={
+                  selectedCategory === category.name ? "default" : "outline"
+                }
                 size="sm"
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => setSelectedCategory(category.name)}
                 className="whitespace-nowrap"
               >
-                {category}
+                {category.name}
               </Button>
             ))}
           </div>
@@ -135,20 +132,20 @@ export function Home() {
       <section className="container mx-auto px-4 py-8">
         <div className="mb-6">
           <p className="text-muted-foreground">
-            {filteredProducts.length}{" "}
-            {filteredProducts.length === 1
+            {filteredProducts?.length}{" "}
+            {filteredProducts?.length === 1
               ? "produto encontrado"
               : "produtos encontrados"}
           </p>
         </div>
 
-        {filteredProducts.length === 0 ? (
+        {filteredProducts?.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-muted-foreground">Nenhum produto encontrado</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
+            {filteredProducts?.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

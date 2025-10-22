@@ -12,6 +12,7 @@ parameters:
         - name
         - description
         - price
+        - category
       properties:
         name:
           type: string
@@ -26,6 +27,14 @@ parameters:
           format: float
           description: The price of the product.
           example: 1299.99
+        category:
+          type: integer
+          description: The ID of the category to which the product belongs.
+          example: 1
+        image:
+          type: string
+          description: The URL of the product image.
+          example: "https://example.com/product-image.jpg"
 responses:
   201:
     description: Product added successfully.

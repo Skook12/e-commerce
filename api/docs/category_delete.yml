@@ -1,0 +1,17 @@
+tags:
+  - Category
+summary: Delete a category
+description: Deletes a category from the store by its ID. Requires the user to be logged in.
+parameters:
+  - name: category_id
+    in: path
+    required: true
+    type: integer
+    description: The ID of the category to delete.
+responses:
+  200:
+    description: Category deleted successfully.
+  401:
+    description: Unauthorized, user is not logged in.
+  404:
+    description: Category not found.

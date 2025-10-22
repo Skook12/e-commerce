@@ -17,25 +17,29 @@ class ProductService:
         return product
 
     def create_product(self, data: Dict) -> Product:
-        if not data or "name" not in data or "price" not in data:
+        if not data or "name" not in data or "price" not in data or "category" not in data or "image" not in data:
             raise InvalidData("Invalid product data")
         
         new_product = Product(
             name=data['name'],
             description=data.get('description', ''),
-            price=data['price']
+            category=data['category'],
+            price=data['price'],
+            image=data['image'] 
         )
         return self.repository.add(new_product)
 
     def update_product(self, product_id: int, data: Dict) -> Product:
         product = self.get_product_by_id(product_id)
         
-        if not data or "name" not in data or "price" not in data:
+        if not data or "name" not in data or "price" not in data or "category" not in data or "image" not in data:
             raise InvalidData("Invalid product data for update")
         
         product.name = data['name']
         product.description = data.get('description', product.description)
         product.price = data['price']
+        product.category = data['category']
+        product.image = data['image']
         return self.repository.update(product)
 
     def delete_product(self, product_id: int) -> None:

@@ -23,5 +23,9 @@ responses:
         price:
           type: number
           format: float
+        category:
+          type: string
+        image:
+          type: string
   404:
     description: Product not found.

@@ -23,3 +23,9 @@ responses:
             type: number
             format: float
             description: Product price.
+          category:
+            type: string
+            description: Category Name.
+          image:
+            type: string
+            description: Product image URL.

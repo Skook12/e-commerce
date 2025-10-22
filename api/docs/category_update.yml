@@ -1,0 +1,30 @@
+tags:
+  - Category
+summary: Update an existing category
+description: Updates the details of a specific category. Requires the user to be logged in.
+parameters:
+  - name: category_id
+    in: path
+    required: true
+    type: integer
+    description: The ID of the category to update.
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The updated name of the category.
+responses:
+  200:
+    description: Category updated successfully.
+  400:
+    description: Invalid data provided.
+  401:
+    description: Unauthorized, user is not logged in.
+  404:
+    description: Product not found.

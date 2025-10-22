@@ -1,4 +1,5 @@
 from typing import List, Optional
+from sqlalchemy.orm import joinedload
 from ecommerce_api.repositories.product_interface import IProductRepository
 from ..extensions import db
 from ..models.product_model import Product
@@ -6,7 +7,7 @@ from ..models.product_model import Product
 
 class SQLAlchemyProductRepository(IProductRepository):
     def get_all(self) -> List[Product]:
-        return Product.query.all()
+        return Product.query.options(joinedload(Product.category_info)).all()
 
     def get_by_id(self, product_id: int) -> Optional[Product]:
         return Product.query.get(product_id)

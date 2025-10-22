@@ -17,6 +17,7 @@ parameters:
         - name
         - description
         - price
+        - category
       properties:
         name:
           type: string
@@ -24,10 +25,13 @@ parameters:
         description:
           type: string
           description: The updated description.
-        price:
-          type: number
-          format: float
-          description: The updated price.
+      description:
+        type: integer
+        description: The updated category.
+      price:
+        type: number
+        format: float
+        description: The updated price.
 responses:
   200:
     description: Product updated successfully.
