@@ -70,9 +70,8 @@ const MOCK_PRODUCTS: Product[] = [
 export function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");
-  const { data: products, isLoading: isLoadingProducts } = useGetProducts();
-  const { data: categories, isLoading: isLoadingCategories } =
-    useGetCategories();
+  const { data: products } = useGetProducts();
+  const { data: categories } = useGetCategories();
 
   const filteredProducts = products?.filter((product) => {
     const matchesSearch =

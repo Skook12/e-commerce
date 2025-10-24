@@ -1,13 +1,50 @@
-import { useState } from "react";
 import { LogIn, AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { z } from "zod/v4";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+  showErrorToast,
+  showLoadingToast,
+  showSuccessToast,
+} from "@/components/ui/toast";
+import { toast } from "sonner";
+import { useLoginValidation } from "@/http/services/login/login-service";
+import { useNavigate } from "react-router-dom";
+
+const createSimpleSchema = z.object({
+  username: z.string().min(1, { message: "Type a username" }),
+  password: z.string().min(1, { message: "Type a password" }),
+});
+type createSimpleFormData = z.infer<typeof createSimpleSchema>;
 
 export function Login() {
-  const [email, setEmail] = useState("");
+  const { mutate: useLogin } = useLoginValidation();
+  const navigate = useNavigate();
+
+  const createForm = useForm<createSimpleFormData>({
+    resolver: zodResolver(createSimpleSchema),
+  });
+
+  async function handleLogin(data: createSimpleFormData) {
+    const loadingToastId = showLoadingToast("Validating user...");
+    await useLogin(data, {
+      onSuccess: () => {
+        toast.dismiss(loadingToastId);
+        showSuccessToast(`logged sucessfully`);
+        navigate("/dashboard");
+      },
+      onError: (error) => {
+        toast.dismiss(loadingToastId);
+        showErrorToast(String(error) || "Error, try again later");
+      },
+    });
+    createForm.reset();
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-background p-4">
@@ -16,32 +53,33 @@ export function Login() {
           <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
             <LogIn className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h2 className="mb-2">Acesso ao Dashboard</h2>
+          <h2 className="mb-2">Access to dashboard</h2>
           <p className="text-muted-foreground">
-            Entre com suas credenciais administrativas
+            Use your username and password to access the dashboard
           </p>
         </div>
 
-        <form className="space-y-4">
+        <form
+          className="space-y-4"
+          onSubmit={createForm.handleSubmit(handleLogin)}
+        >
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>Erro</AlertDescription>
+            <AlertDescription>Error</AlertDescription>
           </Alert>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="admin@shop.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <Label htmlFor="username">username</Label>
+            <Input id="username" {...createForm.register("username")} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="password">Senha</Label>
-            <Input id="password" type="password" placeholder="••••••••" />
+            <Input
+              id="password"
+              type="password"
+              {...createForm.register("password")}
+            />
           </div>
 
           <Button type="submit" className="w-full" size="lg">
@@ -50,11 +88,11 @@ export function Login() {
 
           <div className="bg-muted p-4 rounded-lg mt-4">
             <p className="text-sm text-muted-foreground">
-              <strong>Credenciais de teste:</strong>
+              <strong>user for test:</strong>
               <br />
-              Email: admin@shop.com
+              username: admin
               <br />
-              Senha: admin123
+              password: 123
             </p>
           </div>
         </form>

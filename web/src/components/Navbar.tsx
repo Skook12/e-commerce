@@ -1,16 +1,10 @@
-import { ShoppingCart, User, LogOut, LayoutDashboard } from "lucide-react";
+import { ShoppingCart, User, LayoutDashboard } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 export function Navbar() {
   const onNavigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState("home");
-
-  const handleLogout = () => {
-    onNavigate("/");
-  };
 
   return (
     <header className="border-b sticky top-0 bg-background z-50">
@@ -24,28 +18,6 @@ export function Navbar() {
           </div>
           <span className="text-xl">ModernShop</span>
         </button>
-
-        <nav className="hidden md:flex items-center gap-6">
-          <button
-            onClick={() => onNavigate("home")}
-            className={`transition-colors hover:text-primary ${
-              currentPage === "home" ? "text-primary" : "text-muted-foreground"
-            }`}
-          >
-            Produtos
-          </button>
-
-          <button
-            onClick={() => onNavigate("dashboard")}
-            className={`transition-colors hover:text-primary ${
-              currentPage === "dashboard"
-                ? "text-primary"
-                : "text-muted-foreground"
-            }`}
-          >
-            Dashboard
-          </button>
-        </nav>
 
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" className="relative">
@@ -63,10 +35,6 @@ export function Navbar() {
             className="md:hidden"
           >
             <LayoutDashboard className="w-5 h-5" />
-          </Button>
-
-          <Button variant="ghost" size="icon" onClick={handleLogout}>
-            <LogOut className="w-5 h-5" />
           </Button>
 
           <Button

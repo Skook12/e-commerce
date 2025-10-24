@@ -20,7 +20,7 @@ def login():
         login_user(user)
         return jsonify({"message": "Login successful"}), 200
     except InvalidData as e:
-        return jsonify({"error": str(e)}), 401
+        return jsonify({"message": str(e)}), 401
 
 @auth_bp.route("/logout", methods=["POST"])
 @login_required

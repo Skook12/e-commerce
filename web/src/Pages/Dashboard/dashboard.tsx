@@ -1,25 +1,6 @@
-import { useState } from "react";
-import { Plus, Pencil, Trash2, Package } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Pencil, Trash2, Package, LogOut } from "lucide-react";
 
-import type { Product } from "@/http/type/product";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -29,6 +10,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useLogout } from "@/http/services/login/logout-service";
+import {
+  showErrorToast,
+  showLoadingToast,
+  showSuccessToast,
+} from "@/components/ui/toast";
+import { toast } from "sonner";
+import { FormProduct } from "@/components/forms/form-product";
+import { Button } from "@/components/ui/button";
+import { useGetProducts } from "@/http/services/product/product-get-service";
 
 const CATEGORIES = [
   "Audio",
@@ -40,80 +31,32 @@ const CATEGORIES = [
 ];
 
 export function Dashboard() {
-  const [products, setProducts] = useState<Product[]>([
-    {
-      id: "1",
-      name: "Fone de Ouvido Premium",
-      price: 299.99,
-      image:
-        "https://images.unsplash.com/photo-1713618651165-a3cf7f85506c?w=400",
-      category: "Audio",
-      description: "Fone com cancelamento de ruído",
-    },
-  ]);
+  const { mutate: Logout } = useLogout();
+  const navigate = useNavigate();
+  const { data: products } = useGetProducts();
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    price: "",
-    image: "",
-    category: "",
-    description: "",
-  });
-
-  const handleOpenDialog = (product?: Product) => {
-    if (product) {
-      setEditingProduct(product);
-      setFormData({
-        name: product.name,
-        price: product.price.toString(),
-        image: product.image,
-        category: product.category,
-        description: product.description,
-      });
-    } else {
-      setEditingProduct(null);
-      setFormData({
-        name: "",
-        price: "",
-        image: "",
-        category: "",
-        description: "",
-      });
-    }
-    setIsDialogOpen(true);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const productData: Product = {
-      id: editingProduct?.id || Date.now().toString(),
-      name: formData.name,
-      price: parseFloat(formData.price),
-      image: formData.image,
-      category: formData.category,
-      description: formData.description,
-    };
-
-    if (editingProduct) {
-      setProducts((prev) =>
-        prev.map((p) => (p.id === editingProduct.id ? productData : p))
-      );
-    } else {
-      setProducts((prev) => [...prev, productData]);
-    }
-
-    setIsDialogOpen(false);
-  };
-
-  const handleDelete = (id: string) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
-  };
+  function handleLogout() {
+    const loadingToastId = showLoadingToast("Validating user...");
+    Logout(undefined, {
+      onSuccess: () => {
+        toast.dismiss(loadingToastId);
+        showSuccessToast(`logged out sucessfully`);
+        navigate("/");
+      },
+      onError: (error) => {
+        toast.dismiss(loadingToastId);
+        showErrorToast(String(error) || "Error, try again later");
+      },
+    });
+  }
 
   return (
     <div className="min-h-screen bg-background">
+      <div className="flex items-end justify-end p-5">
+        <Button variant="ghost" size="icon" onClick={handleLogout}>
+          <LogOut className="w-5 h-5" />
+        </Button>
+      </div>
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -123,113 +66,7 @@ export function Dashboard() {
             </p>
           </div>
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={() => handleOpenDialog()} className="gap-2">
-                <Plus className="w-4 h-4" />
-                Novo Produto
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingProduct ? "Editar Produto" : "Novo Produto"}
-                </DialogTitle>
-              </DialogHeader>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Nome do Produto</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="price">Preço (R$)</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      step="0.01"
-                      value={formData.price}
-                      onChange={(e) =>
-                        setFormData({ ...formData, price: e.target.value })
-                      }
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="category">Categoria</Label>
-                    <Select
-                      value={formData.category}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, category: value })
-                      }
-                      required
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {CATEGORIES.map((cat) => (
-                          <SelectItem key={cat} value={cat}>
-                            {cat}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="image">URL da Imagem</Label>
-                  <Input
-                    id="image"
-                    type="url"
-                    value={formData.image}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setFormData({ ...formData, image: e.target.value })
-                    }
-                    placeholder="https://exemplo.com/imagem.jpg"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="description">Descrição</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    rows={3}
-                    required
-                  />
-                </div>
-
-                <div className="flex gap-2 pt-4">
-                  <Button type="submit" className="flex-1">
-                    {editingProduct ? "Atualizar" : "Criar"} Produto
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsDialogOpen(false)}
-                  >
-                    Cancelar
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <FormProduct />
         </div>
 
         {/* Stats */}
@@ -241,7 +78,7 @@ export function Dashboard() {
               </div>
               <div>
                 <p className="text-muted-foreground">Total de Produtos</p>
-                <h3>{products.length}</h3>
+                <h3>{products?.length}</h3>
               </div>
             </div>
           </Card>
@@ -267,9 +104,9 @@ export function Dashboard() {
                 <p className="text-muted-foreground">Valor Médio</p>
                 <h3>
                   R${" "}
-                  {products.length > 0
+                  {products
                     ? (
-                        products.reduce((sum, p) => sum + p.price, 0) /
+                        products?.reduce((sum, p) => sum + p.price, 0) /
                         products.length
                       ).toFixed(2)
                     : "0.00"}
@@ -293,7 +130,7 @@ export function Dashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {products.length === 0 ? (
+                {products?.length === 0 ? (
                   <TableRow>
                     <TableCell
                       colSpan={5}
@@ -303,7 +140,7 @@ export function Dashboard() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  products.map((product) => (
+                  products?.map((product) => (
                     <TableRow key={product.id}>
                       <TableCell>
                         <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted">
@@ -326,18 +163,10 @@ export function Dashboard() {
                       <TableCell>R$ {product.price.toFixed(2)}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => handleOpenDialog(product)}
-                          >
+                          <Button size="icon" variant="ghost">
                             <Pencil className="w-4 h-4" />
                           </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => handleDelete(product.id)}
-                          >
+                          <Button size="icon" variant="ghost">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>

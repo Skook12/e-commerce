@@ -20,7 +20,7 @@ def create_app(config_class=DevelopmentConfig):
     swagger.init_app(app)
     cors.init_app(
         app,
-        resources={r"/*": {"origins": "http://localhost:5173"}},
+        origins ="http://localhost:5173",
         supports_credentials=True
     )
 
