@@ -25,6 +25,8 @@ responses:
           format: float
         category:
           type: string
+        category_id:
+          type: integer
         image:
           type: string
   404:

@@ -18,7 +18,7 @@ category_service = category_service.CategoryService(SQLAlchemyCategoryRepository
 def get_products():
     products = product_service.get_all_products()
     return jsonify([{
-        "id": p.id, "name": p.name, "description": p.description, "price": p.price, "category": p.category_info.name, "image": p.image
+        "id": p.id, "name": p.name, "description": p.description, "price": p.price, "category": p.category_info.name, "category_id": p.category_info.id, "image": p.image
     } for p in products]), 200
 
 @products_bp.route("/products/<int:product_id>", methods=["GET"])
@@ -26,13 +26,13 @@ def get_products():
 def get_product(product_id):
     try:
         product = product_service.get_product_by_id(product_id)
-        category = category_service.get_category_by_id(product.category)
         return jsonify({
             "id": product.id,
             "name": product.name,
             "description": product.description,
             "price": product.price,
-            "category": category.name,
+            "category": product.category_info.name,
+            "category_id": product.category_info.id,
             "image": product.image
         }), 200
     except NotFound as e:

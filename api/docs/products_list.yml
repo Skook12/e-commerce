@@ -26,6 +26,9 @@ responses:
           category:
             type: string
             description: Category Name.
+          category_id:
+            type: integer
+            description: Category ID.
           image:
             type: string
             description: Product image URL.

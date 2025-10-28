@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -30,9 +30,15 @@ import {
 } from "../ui/toast";
 import { toast } from "sonner";
 import { useCreateProduct } from "@/http/services/product/product-post-service";
+import { useUpdateProduct } from "@/http/services/product/product-put-service";
 
 interface FormProductProps {
   productId?: number;
+  category?: number;
+  description?: string;
+  image?: string;
+  price?: number;
+  name?: string;
 }
 
 const createSimpleSchema = z.object({
@@ -44,17 +50,32 @@ const createSimpleSchema = z.object({
 });
 type createSimpleFormData = z.infer<typeof createSimpleSchema>;
 
-export function FormProduct({ productId }: FormProductProps) {
+export function FormProduct({
+  productId,
+  name,
+  category,
+  description,
+  image,
+  price,
+}: FormProductProps) {
   const { data: categories } = useGetCategories();
   const { mutate: useCreate } = useCreateProduct();
+  const { mutate: useUpdate } = useUpdateProduct();
   const [open, setOpen] = useState(false);
   const createForm = useForm<createSimpleFormData>({
     resolver: zodResolver(createSimpleSchema),
+    defaultValues: {
+      name: name,
+      category: category,
+      description: description,
+      image: image,
+      price: price,
+    },
   });
 
   const {
     formState: { errors },
-    control, // <-- Obtenha o control aqui
+    control,
   } = createForm;
 
   async function handleCreate(data: createSimpleFormData) {
@@ -62,7 +83,7 @@ export function FormProduct({ productId }: FormProductProps) {
     await useCreate(data, {
       onSuccess: () => {
         toast.dismiss(loadingToastId);
-        showSuccessToast(`logged sucessfully`);
+        showSuccessToast(`Created sucessfully`);
         setOpen(false);
       },
       onError: (error) => {
@@ -72,13 +93,38 @@ export function FormProduct({ productId }: FormProductProps) {
     });
     createForm.reset();
   }
+
+  async function handleUpdate(data: createSimpleFormData) {
+    const loadingToastId = showLoadingToast("Updating Product...");
+    await useUpdate(
+      { data, id: productId },
+      {
+        onSuccess: () => {
+          toast.dismiss(loadingToastId);
+          showSuccessToast(`Updated sucessfully`);
+          setOpen(false);
+        },
+        onError: (error) => {
+          toast.dismiss(loadingToastId);
+          showErrorToast(String(error) || "Error, try again later");
+        },
+      }
+    );
+    createForm.reset();
+  }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-2">
-          <Plus className="w-4 h-4" />
-          Novo Produto
-        </Button>
+        {productId ? (
+          <Button size="icon" variant="ghost">
+            <Pencil className="w-4 h-4" />
+          </Button>
+        ) : (
+          <Button className="gap-2">
+            <Plus className="w-4 h-4" />
+            New Product
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -89,7 +135,11 @@ export function FormProduct({ productId }: FormProductProps) {
 
         <form
           className="space-y-4"
-          onSubmit={createForm.handleSubmit(handleCreate)}
+          onSubmit={
+            productId
+              ? createForm.handleSubmit(handleUpdate)
+              : createForm.handleSubmit(handleCreate)
+          }
         >
           <div className="space-y-2">
             <Label htmlFor="name">Product Name</Label>
