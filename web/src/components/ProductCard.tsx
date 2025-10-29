@@ -2,12 +2,29 @@ import { ShoppingCart } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import type { Product } from "@/http/type/product";
+import { useAddItemCart } from "@/http/services/cart/cart-post-service";
+import { showErrorToast, showLoadingToast, showSuccessToast } from "./ui/toast";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { mutate: createCartItem } = useAddItemCart();
+  async function handleCreate(id: number) {
+    const loadingToastId = showLoadingToast("Adding product...");
+    await createCartItem(id, {
+      onSuccess: () => {
+        toast.dismiss(loadingToastId);
+        showSuccessToast(`Product added sucessfully`);
+      },
+      onError: (error) => {
+        toast.dismiss(loadingToastId);
+        showErrorToast(String(error) || "Error, try again later");
+      },
+    });
+  }
   return (
     <Card className="overflow-hidden group hover:shadow-lg transition-shadow">
       <div className="aspect-square overflow-hidden bg-muted">
@@ -25,10 +42,14 @@ export function ProductCard({ product }: ProductCardProps) {
           </p>
         </div>
         <div className="flex items-center justify-between mt-4">
-          <span className="text-primary">R$ {product.price.toFixed(2)}</span>
-          <Button size="sm" className="gap-2">
+          <span className="text-primary">$ {product.price.toFixed(2)}</span>
+          <Button
+            size="sm"
+            className="gap-2"
+            onClick={() => handleCreate(product.id)}
+          >
             <ShoppingCart className="w-4 h-4" />
-            Adicionar
+            Add
           </Button>
         </div>
       </div>

@@ -17,7 +17,7 @@ export function useGetProducts() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        const errorMessage = errorData?.detail || "Error loading products.";
+        const errorMessage = errorData.message || "Error loading products.";
         throw new Error(errorMessage);
       }
 

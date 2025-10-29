@@ -26,7 +26,7 @@ def add_category():
         category = category_service.create_category(data)
         return jsonify({"message": "Category added successfully", "id": category.id}), 201
     except InvalidData as e:
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"message": str(e)}), 400
 
 @category_bp.route("/category/update/<int:category_id>", methods=["PUT"])
 @login_required
@@ -37,7 +37,7 @@ def update_category(category_id):
         category_service.update_category(category_id, data)
         return jsonify({"message": "Category updated successfully"}), 200
     except (NotFound, InvalidData) as e:
-        return jsonify({"error": str(e)}), 404 if isinstance(e, NotFound) else 400
+        return jsonify({"message": str(e)}), 404 if isinstance(e, NotFound) else 400
 
 @category_bp.route("/category/delete/<int:category_id>", methods=["DELETE"])
 @login_required
@@ -47,4 +47,4 @@ def delete_product(category_id):
         category_service.delete_category(category_id)
         return jsonify({"message": "Category deleted successfully"}), 200
     except NotFound as e:
-        return jsonify({"error": str(e)}), 404
+        return jsonify({"message": str(e)}), 404

@@ -6,11 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Navbar } from "@/components/Navbar";
 import { useGetProducts } from "@/http/services/product/product-get-service";
 import { useGetCategories } from "@/http/services/category/category-get-service";
-//import { useCart, Product } from "../context/CartContext";
 
 export function Home() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Todos");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const { data: products } = useGetProducts();
   const { data: categories } = useGetCategories();
 
@@ -19,7 +18,7 @@ export function Home() {
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory =
-      selectedCategory === "Todos" || product.category === selectedCategory;
+      selectedCategory === "All" || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -36,7 +35,7 @@ export function Home() {
           <div className="max-w-md mx-auto relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
-              placeholder="Buscar produtos..."
+              placeholder="Search products..."
               value={searchTerm}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setSearchTerm(e.target.value)
@@ -47,10 +46,17 @@ export function Home() {
         </div>
       </section>
 
-      {/* Categories */}
       <section className="border-b bg-background z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex gap-2 overflow-x-auto pb-2">
+            <Button
+              variant={selectedCategory === "All" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedCategory("All")}
+              className="whitespace-nowrap"
+            >
+              All
+            </Button>
             {categories?.map((category) => (
               <Button
                 key={category.id}
@@ -69,15 +75,6 @@ export function Home() {
       </section>
 
       <section className="container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <p className="text-muted-foreground">
-            {filteredProducts?.length}{" "}
-            {filteredProducts?.length === 1
-              ? "product found"
-              : "product not found"}
-          </p>
-        </div>
-
         {filteredProducts?.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-muted-foreground">Products not found</p>

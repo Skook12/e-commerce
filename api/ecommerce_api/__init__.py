@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from config import DevelopmentConfig
 from .extensions import db, login_manager, swagger, cors
 from .models.user_model import User
@@ -29,10 +29,14 @@ def create_app(config_class=DevelopmentConfig):
     def load_user(user_id):
         return User.query.get(int(user_id))
 
+    @app.errorhandler(405)
+    def method_not_allowed(e):
+        return jsonify({"message": "User not logged in"}), 405
+
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(products_bp, url_prefix='/api')
-    app.register_blueprint(cart_bp, url_prefix='/api/cart')
+    app.register_blueprint(cart_bp, url_prefix='/api')
     app.register_blueprint(category_bp, url_prefix='/api')
 
     return app

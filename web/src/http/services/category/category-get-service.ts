@@ -17,7 +17,7 @@ export function useGetCategories() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        const errorMessage = errorData?.detail || "Error loading categories.";
+        const errorMessage = errorData.message || "Error loading categories.";
         throw new Error(errorMessage);
       }
 

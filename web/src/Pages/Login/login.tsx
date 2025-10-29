@@ -1,6 +1,5 @@
-import { LogIn, AlertCircle } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -63,11 +62,6 @@ export function Login() {
           className="space-y-4"
           onSubmit={createForm.handleSubmit(handleLogin)}
         >
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>Error</AlertDescription>
-          </Alert>
-
           <div className="space-y-2">
             <Label htmlFor="username">username</Label>
             <Input id="username" {...createForm.register("username")} />

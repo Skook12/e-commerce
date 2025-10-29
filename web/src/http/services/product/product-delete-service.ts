@@ -20,7 +20,7 @@ export function useDeleteProduct() {
         const errorData = await response.json().catch(() => null);
 
         const errorMessage =
-          errorData?.detail || "Erro ao deletar. Tente novamente mais tarde.";
+          errorData.message || "Erro ao deletar. Tente novamente mais tarde.";
 
         throw new Error(errorMessage);
       }

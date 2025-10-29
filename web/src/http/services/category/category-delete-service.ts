@@ -19,8 +19,7 @@ export function useDeleteCategory() {
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
 
-        const errorMessage =
-          errorData?.detail || "Erro ao deletar. Tente novamente mais tarde.";
+        const errorMessage = errorData.message || "Error, try again later.";
 
         throw new Error(errorMessage);
       }

@@ -25,6 +25,9 @@ responses:
                 type: string
               description:
                 type: string
+              image:
+                type: string
+                format: float
               price:
                 type: number
                 format: float

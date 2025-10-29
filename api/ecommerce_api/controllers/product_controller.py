@@ -36,7 +36,7 @@ def get_product(product_id):
             "image": product.image
         }), 200
     except NotFound as e:
-        return jsonify({"error": str(e)}), 404
+        return jsonify({"message": str(e)}), 404
 
 @products_bp.route("/products/add", methods=["POST"])
 @login_required
@@ -47,7 +47,7 @@ def add_product():
         product = product_service.create_product(data)
         return jsonify({"message": "Product added successfully", "id": product.id}), 201
     except InvalidData as e:
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"message": str(e)}), 400
 
 @products_bp.route("/products/update/<int:product_id>", methods=["PUT"])
 @login_required
@@ -58,7 +58,7 @@ def update_product(product_id):
         product_service.update_product(product_id, data)
         return jsonify({"message": "Product updated successfully"}), 200
     except (NotFound, InvalidData) as e:
-        return jsonify({"error": str(e)}), 404 if isinstance(e, NotFound) else 400
+        return jsonify({"message": str(e)}), 404 if isinstance(e, NotFound) else 400
 
 @products_bp.route("/products/delete/<int:product_id>", methods=["DELETE"])
 @login_required
@@ -68,4 +68,4 @@ def delete_product(product_id):
         product_service.delete_product(product_id)
         return jsonify({"message": "Product deleted successfully"}), 200
     except NotFound as e:
-        return jsonify({"error": str(e)}), 404
+        return jsonify({"message": str(e)}), 404

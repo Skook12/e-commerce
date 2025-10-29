@@ -21,7 +21,8 @@ class CartService:
                     "product": {
                         "id": product.id,
                         "name": product.name,
-                        "price": product.price
+                        "price": product.price,
+                        "image": product.image
                     }
                 })
         return cart_details
@@ -38,6 +39,18 @@ class CartService:
         else:
             new_item = CartItem(user_id=user_id, product_id=product_id, quantity=1)
             self.cart_repo.add(new_item)
+    
+    def remove_item_from_cart(self, user_id: int, product_id: int) -> None:
+        product = self.product_repo.get_by_id(product_id)
+        if not product:
+            raise NotFound("Product not found")
+        
+        cart_item = self.cart_repo.find_by_user_and_product(user_id, product_id)
+        if cart_item and cart_item.quantity > 1:
+            cart_item.quantity -= 1
+            self.cart_repo.update(cart_item)
+        else:
+            self.cart_repo.delete(cart_item)
 
     def remove_from_cart(self, user_id: int, product_id: int) -> None:
         cart_item = self.cart_repo.find_by_user_and_product(user_id, product_id)

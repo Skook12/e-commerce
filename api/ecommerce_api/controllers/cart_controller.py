@@ -12,14 +12,14 @@ cart_service = CartService(
     product_repo=SQLAlchemyProductRepository()
 )
 
-@cart_bp.route("/", methods=["GET"])
+@cart_bp.route("/cart", methods=["GET"])
 @login_required
 @swag_from('../../docs/cart_get.yml')
 def get_cart():
     cart_contents = cart_service.get_cart_contents(current_user.id)
     return jsonify(cart_contents), 200
 
-@cart_bp.route("/add/<int:product_id>", methods=["POST"])
+@cart_bp.route("/cart/add/<int:product_id>", methods=["POST"])
 @login_required
 @swag_from('../../docs/cart_add_item.yml')
 def add_to_cart(product_id):
@@ -27,9 +27,9 @@ def add_to_cart(product_id):
         cart_service.add_to_cart(user_id=current_user.id, product_id=product_id)
         return jsonify({"message": "Product added to cart"}), 201
     except NotFound as e:
-        return jsonify({"error": str(e)}), 404
+        return jsonify({"message": str(e)}), 404
 
-@cart_bp.route("/remove/<int:product_id>", methods=["DELETE"])
+@cart_bp.route("/cart/remove/<int:product_id>", methods=["DELETE"])
 @login_required
 @swag_from('../../docs/cart_remove_item.yml')
 def remove_from_cart(product_id):
@@ -38,8 +38,18 @@ def remove_from_cart(product_id):
         return jsonify({"message": "Product removed from cart"}), 200
     except NotFound as e:
         return jsonify({"error": str(e)}), 404
+    
+@cart_bp.route("/cart/removeitem/<int:product_id>", methods=["DELETE"])
+@login_required
+#@swag_from('../../docs/cart_remove_item.yml')
+def remove_item_from_cart(product_id):
+    try:
+        cart_service.remove_item_from_cart(user_id=current_user.id, product_id=product_id)
+        return jsonify({"message": "Product removed from cart"}), 200
+    except NotFound as e:
+        return jsonify({"message": str(e)}), 404
 
-@cart_bp.route("/checkout", methods=["POST"])
+@cart_bp.route("/cart/checkout", methods=["POST"])
 @login_required
 @swag_from('../../docs/cart_checkout.yml')
 def checkout():
@@ -47,4 +57,4 @@ def checkout():
         cart_service.checkout(current_user.id)
         return jsonify({"message": "Order placed successfully"}), 200
     except InvalidData as e:
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"message": str(e)}), 400
