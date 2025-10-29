@@ -31,7 +31,7 @@ def add_to_cart(product_id):
 
 @cart_bp.route("/cart/remove/<int:product_id>", methods=["DELETE"])
 @login_required
-@swag_from('../../docs/cart_remove_item.yml')
+@swag_from('../../docs/cart_remove_item_all.yml')
 def remove_from_cart(product_id):
     try:
         cart_service.remove_from_cart(user_id=current_user.id, product_id=product_id)
@@ -41,7 +41,7 @@ def remove_from_cart(product_id):
     
 @cart_bp.route("/cart/removeitem/<int:product_id>", methods=["DELETE"])
 @login_required
-#@swag_from('../../docs/cart_remove_item.yml')
+@swag_from('../../docs/cart_remove_item.yml')
 def remove_item_from_cart(product_id):
     try:
         cart_service.remove_item_from_cart(user_id=current_user.id, product_id=product_id)
