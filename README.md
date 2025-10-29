@@ -279,18 +279,6 @@ The frontend uses Vite for configuration. Key settings in `web/vite.config.ts`:
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
-
-This project is part of a portfolio project.
-
-## 👤 Author
-
-**Rodrigo**
-- Portfolio: [Your Portfolio Link]
-- LinkedIn: [Your LinkedIn]
-- GitHub: [Your GitHub]
-
----
 
 **Note**: Make sure both the backend (API) and frontend (Web) are running simultaneously for the application to work properly. The frontend communicates with the backend API running on `http://localhost:5000`.
 
